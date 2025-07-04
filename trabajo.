@@ -1,0 +1,66 @@
+# Aplicación de Arquitectura de Microservicios al Proyecto  
+## "Dispositivo Guardián Inteligente para Regletas Eléctricas"
+
+---
+
+## 1. Separación de Responsabilidades
+
+Se propone dividir el sistema en los siguientes microservicios:
+
+| Microservicio              | Responsabilidad Principal                                           |
+|---------------------------|---------------------------------------------------------------------|
+| **Sensor Service**         | Captura de datos del ESP32 (corriente y voltaje).                  |
+| **Alert Service**          | Procesamiento de datos y generación de alertas.                    |
+| **Storage Service**        | Almacenamiento de registros históricos en Railway u otra base de datos. |
+| **Mobile App Backend**     | Comunicación con la app móvil y lógica de negocio.                 |
+| **User Management Service**| (Opcional) Gestión de usuarios, autenticación, preferencias.       |
+
+---
+
+##  2. Despliegue Independiente
+
+Cada microservicio se puede desarrollar y desplegar por separado mediante:
+
+- Contenedores Docker.
+- Orquestación con **Docker Compose** o **Kubernetes**.
+- Plataformas como **Railway**, **Render**, **Vercel** o **Heroku**.
+
+**Ventaja:** Puedes actualizar, escalar o reiniciar un microservicio sin afectar los demás.
+
+---
+
+##  3. Componentes Clave de Microservicios
+
+###  Servicio Descubridor (Service Discovery)
+
+Permite la comunicación automática entre microservicios sin depender de IPs fijas.
+
+- Herramientas sugeridas
+
+### API Gateway
+
+Canal único de entrada para todas las peticiones a los microservicios.
+
+**Responsabilidades:**
+- Enrutamiento.
+- Seguridad (JWT, CORS, Rate Limiting).
+- Logging y monitoreo centralizado.
+
+**Opciones recomendadas:**
+- `Kong`, `Traefik`, `Express Gateway`.
+- En Node.js, puedes construir un gateway personalizado con `Express.js`.
+
+---
+
+##  4. Diagrama de Flujo con Microservicios
+
+```mermaid
+graph TD
+  A[ESP32 - sensores] -->|Wi-Fi| B[Sensor Service]
+  B --> C[Alert Service]
+  B --> D[Storage Service]
+  C --> E[Mobile App Backend]
+  D --> E
+  E -->|HTTP/API| F[API Gateway]
+  F -->|REST/GraphQL| G[Aplicación móvil o web]
+```
